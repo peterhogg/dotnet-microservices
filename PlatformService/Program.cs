@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PlatformService.Data;
 using PlatformService.SyncDataServices.Http;
@@ -10,7 +11,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("InMem"));
+
+IWebHostEnvironment environment = builder.Environment;
+var connectionStringBuilder = new SqlConnectionStringBuilder(
+    builder.Configuration.GetConnectionString("PlatformsConnection"));
+connectionStringBuilder.Password = builder.Configuration["PlatformsDbPassword"];
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionStringBuilder.ConnectionString));
 builder.Services.AddScoped<IPlatformRepo, PlatformRepo>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
