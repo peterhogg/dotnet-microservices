@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using PlatformService.Models;
 
 namespace PlatformService.Data;
@@ -13,6 +14,15 @@ public static class PrepDb
 
     private static void SeedData(AppDbContext context)
     {
+
+        try
+        {
+            context.Database.Migrate();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Could not run migartions: {ex.Message}");
+        }
         if (context.Platforms.Any())
         {
             Console.WriteLine("Skipping seed data");
